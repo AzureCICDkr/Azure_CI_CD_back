@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ch8_4</a> &gt; <a href="index.source.html" class="el_package">com.seohan1010.ch8_4.to</a> &gt; <span class="el_source">UserDto.java</span></div><h1>UserDto.java</h1><pre class="source lang-java linenums">package com.seohan1010.ch8_4.to;
+
+import java.time.LocalDate;
+import java.util.Objects;
+
+<span class="nc" id="L6">public class UserDto {</span>
+
+   private String email;
+   private String name;
+   private String password;
+   private LocalDate birthDate;
+   private LocalDate regDate;
+   private String sns;
+
+
+    @Override
+    public String toString() {
+<span class="nc" id="L18">        return &quot;UserDto{&quot; +</span>
+                &quot;email='&quot; + email + '\'' +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, password='&quot; + password + '\'' +
+                &quot;, birthDate='&quot; + birthDate + '\'' +
+                &quot;, regDate=&quot; + regDate +
+                &quot;, sns='&quot; + sns + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L31" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="nc" id="L32">        UserDto userDto = (UserDto) o;</span>
+<span class="nc bnc" id="L33" title="All 12 branches missed.">        return Objects.equals(email, userDto.email) &amp;&amp; Objects.equals(name, userDto.name) &amp;&amp; Objects.equals(password, userDto.password) &amp;&amp; Objects.equals(birthDate, userDto.birthDate) &amp;&amp; Objects.equals(regDate, userDto.regDate) &amp;&amp; Objects.equals(sns, userDto.sns);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L38">        return Objects.hash(email, name, password, birthDate, regDate, sns);</span>
+    }
+
+    public LocalDate getRegDate() {
+<span class="nc" id="L42">        return regDate;</span>
+    }
+
+    public void setRegDate(LocalDate regDate) {
+<span class="nc" id="L46">        this.regDate = regDate;</span>
+<span class="nc" id="L47">    }</span>
+
+    public String getEmail() {
+<span class="nc" id="L50">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="nc" id="L54">        this.email = email.trim();</span>
+<span class="nc" id="L55">    }</span>
+
+    public String getName() {
+<span class="nc" id="L58">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L62">        this.name = name.trim();</span>
+<span class="nc" id="L63">    }</span>
+
+    public String getPassword() {
+<span class="nc" id="L66">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="nc" id="L70">        this.password = password.trim();</span>
+<span class="nc" id="L71">    }</span>
+
+    public LocalDate getBirthDate() {
+<span class="nc" id="L74">        return birthDate;</span>
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+<span class="nc" id="L78">        this.birthDate = birthDate;</span>
+<span class="nc" id="L79">    }</span>
+
+    public String getSns() {
+<span class="nc" id="L82">        return sns;</span>
+    }
+
+    public void setSns(String sns) {
+<span class="nc" id="L86">        this.sns = sns;</span>
+<span class="nc" id="L87">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

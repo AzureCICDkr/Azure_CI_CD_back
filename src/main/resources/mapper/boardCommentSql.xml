@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seohan1010.ch8_4.mapper.BoardCommentMapper">
+
+
+<insert id="insertBoardComment" parameterType="com.seohan1010.ch8_4.to.BoardCommentDto">
+
+    insert into board_comment(
+                        pcno,
+                        commenter,
+                        comment,
+                        register_date
+                        )
+                values(
+                        #{pcno},
+                        #{commenter},
+                        #{comment},
+                        now()
+                     )
+
+
+</insert>
+
+
+
+    <select id="selectBoardComment" parameterType="long" resultType="com.seohan1010.ch8_4.to.BoardCommentDto">
+
+        select cno as cno,
+               pcno as pcno,
+               commenter as commenter,
+               comment as comment,
+               register_date as registerDate
+        from board_comment
+        where pcno=#{pcno}
+          and deleted_yn = 'N'
+        order by cno desc
+    </select>
+
+
+
+    <update id="updateBoardComment" parameterType="com.seohan1010.ch8_4.to.BoardCommentDto" >
+
+        update board_comment
+        set comment = #{comment}
+        where cno=#{cno}
+
+    </update>
+
+
+
+
+
+<update id="deleteBoardCommentByPcno" parameterType="long">
+
+update board_comment
+set deleted_yn = 'Y'
+where pcno = #{pcno}
+
+</update>
+
+
+   <update id="deleteBoardComment" parameterType="long" >
+
+           update board_comment
+           set deleted_yn ='Y'
+           where cno=#{cno}
+
+   </update>
+
+
+
+
+</mapper>

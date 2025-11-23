@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seohan1010.ch8_4.mapper.UserMapper">
+
+
+
+
+    <select id="searchEmail" parameterType="string" resultType="com.seohan1010.ch8_4.to.UserDto" >
+
+        select email as email
+        from user_info
+        where email =#{email}
+
+    </select>
+
+
+    <!--테스트 성공-->
+
+    <!-- jdbc 타입을 지정할때는 상수로 작성해야 한다. -->
+    <insert id="insertUser" parameterType="com.seohan1010.ch8_4.to.UserDto">
+
+        insert into user_info(
+                              email,
+                              name,
+                              password,
+                              birth_date,
+                              reg_date,
+                              sns
+                              )
+        values(
+               #{email},
+               #{name},
+               #{password},
+               #{birthDate, jdbcType=DATE},
+               now(),
+               #{sns, jdbcType=VARCHAR}
+              )
+
+    </insert>
+
+
+    <!-- 테스트 성공 -->
+
+    <select id="selectUser" parameterType="string" resultType="com.seohan1010.ch8_4.to.UserDto">
+
+        select email as email,
+               name as name,
+               password as password,
+               birth_date as birthDate,
+               reg_date as regDate,
+               sns as sns
+        from user_info
+        where email = #{email}
+    </select>
+
+
+    <update id="updateUser" parameterType="com.seohan1010.ch8_4.to.UserDto">
+
+        update user_info
+        set name=#{name},
+            password=#{password},
+            birth_date=#{birthDate, jdbcType=DATE},
+            sns = #{sns, jdbcType=VARCHAR}
+        where email = #{email}
+
+    </update>
+
+
+
+    <delete id="deleteUser" parameterType="map">
+        delete from user_info
+        where email=#{email}
+    </delete>
+
+
+
+
+
+</mapper>

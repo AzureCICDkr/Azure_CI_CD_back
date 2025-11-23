@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seohan1010.ch8_4.mapper.BoardMapper">
+
+
+    <select id="selectTest" resultType="boardDto">
+
+        select * from board
+        where bno = 256
+
+    </select>
+
+    <!-- 테스트 성공 -->
+    <insert id="insertBoard" parameterType="com.seohan1010.ch8_4.to.BoardDto">
+        insert into board(title,
+                          writer,
+                          content,
+                          write_date)
+        values (#{title},
+                #{writer},
+                #{content},
+                now())
+
+    </insert>
+
+
+    <sql id="select">
+        select bno        as bno,
+               title      as title,
+               writer     as writer,
+               content    as content,
+               write_date    writeDate,
+               board_like as boardLike,
+               deleted_yn as deletedYn
+        from board
+        where deleted_yn = 'N'
+
+    </sql>
+
+
+
+
+    <sql id="searchCondition">
+
+        <choose>
+            <when test='option=="T"'>
+                and title like concat('%',#{keyword},'%')
+            </when>
+            <when test='option=="W"'>
+                and writer like concat('%',#{keyword},'%')
+            </when>
+            <otherwise>
+                and (title like concat('%',#{keyword},'%')
+                or content like concat('%',#{keyword},'%') )
+            </otherwise>
+        </choose>
+
+
+    </sql>
+
+
+
+    <!-- 테스트 성공 -->
+    <select id="selectBoardList"  parameterType="map"  resultType="com.seohan1010.ch8_4.to.BoardDto">
+
+        <include refid="select"/>
+        order by bno desc
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="searchBoardList" parameterType="com.seohan1010.ch8_4.to.SearchCondition"
+            resultType="com.seohan1010.ch8_4.to.BoardDto">
+
+        <include refid="select"/>
+
+        <include refid="searchCondition" />
+        order by bno desc
+        limit #{offset},#{pageSize}
+    </select>
+
+
+    <select id="searchBoardListCnt" parameterType="com.seohan1010.ch8_4.to.SearchCondition"
+            resultType="int">
+
+        select
+        count(*)
+        from board
+        where deleted_yn = 'N'
+
+        <include refid="searchCondition"/>
+
+    </select>
+
+
+
+    <select id="count" resultType="int">
+        select count(*) from board;
+    </select>
+
+    <!-- 댓글이 없으면 게시물 번호로만 쿼리문을 날릴수 있게 작성해야겠다.  -->
+    <select id="selectBoardDetail" parameterType="long" resultType="com.seohan1010.ch8_4.to.BoardDto">
+
+        select bno         as bno,
+               title       as title,
+               writer      as writer,
+               content     as content,
+               write_date  as writeDate,
+               update_date as updateDate
+        from board
+        where bno = #{bno}
+          and deleted_yn = 'N'
+
+    </select>
+
+
+    <!-- 테스트 성공 -->
+    <update id="updateBoard" parameterType="com.seohan1010.ch8_4.to.BoardDto">
+
+        update board
+        set title=#{title},
+            content=#{content},
+            update_date=now()
+        where bno = #{bno}
+
+    </update>
+
+
+    <!--이거는 코드 수정이 필요하다-->
+    <update id="updateBoardLike" parameterType="long">
+
+        update board
+        set board_like = board_like + 1
+        where bno = #{bno}
+
+    </update>
+
+
+    <update id="deleteBoardDetail" parameterType="long">
+
+        update board
+        set deleted_yn = 'Y'
+        where bno = #{bno}
+
+    </update>
+
+
+    <select id="selectAll" resultType="com.seohan1010.ch8_4.to.BoardDto">
+
+        select * from board;
+
+    </select>
+
+
+</mapper>

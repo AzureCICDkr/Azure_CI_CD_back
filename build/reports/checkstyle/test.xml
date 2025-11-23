@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="9.3">
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/Ch84ApplicationTests.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/mapper/UserMapperTest.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/mapper/BoardMapperTest.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/mapper/BoardCommentMapperTest.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/mock/MockTest.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/to/TestExample.java">
+</file>
+<file name="/home/ubuntu/Downloads/project/azure_project/3_tier_project/back/ch8_4/src/test/java/com/seohan1010/ch8_4/to/PageHandlerTest.java">
+</file>
+</checkstyle>

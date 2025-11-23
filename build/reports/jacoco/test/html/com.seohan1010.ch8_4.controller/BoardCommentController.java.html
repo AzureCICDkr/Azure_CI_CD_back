@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardCommentController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ch8_4</a> &gt; <a href="index.source.html" class="el_package">com.seohan1010.ch8_4.controller</a> &gt; <span class="el_source">BoardCommentController.java</span></div><h1>BoardCommentController.java</h1><pre class="source lang-java linenums">package com.seohan1010.ch8_4.controller;
+
+import com.seohan1010.ch8_4.mapper.BoardCommentMapper;
+import com.seohan1010.ch8_4.service.BoardCommentService;
+import com.seohan1010.ch8_4.to.BoardCommentDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;,
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+             allowCredentials = &quot;false&quot; )
+@RequestMapping(value = &quot;/boardcomment&quot;)
+<span class="nc" id="L18">public class BoardCommentController {</span>
+
+    @Autowired
+    BoardCommentService boardCommentService;
+
+    // 테스트 성공
+    @RequestMapping(value = &quot;/comment&quot;, method = RequestMethod.POST)
+    public ResponseEntity&lt;HttpStatus&gt; registerBoardComment(@RequestBody BoardCommentDto boardCommentDto) throws Exception {
+<span class="nc" id="L26">        System.out.println(&quot;boardCommentDto = &quot; + boardCommentDto);</span>
+        try {
+<span class="nc" id="L28">            boardCommentService.registerBoardComment(boardCommentDto);</span>
+<span class="nc" id="L29">            return new ResponseEntity&lt;&gt;(HttpStatus.OK);  // 200번 코드를 반환</span>
+<span class="nc" id="L30">        } catch (Exception e) {</span>
+<span class="nc" id="L31">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L33">        return new ResponseEntity&lt;&gt;(HttpStatus.CONFLICT);     // 409 코드를 반환</span>
+
+    }
+
+
+    @RequestMapping(value = &quot;/commentList&quot;, method = RequestMethod.GET)
+    public ResponseEntity&lt;List&lt;BoardCommentDto&gt;&gt; findBoardCommentList(@RequestParam(&quot;pcno&quot;) Long pcno) throws Exception {
+<span class="nc" id="L40">        System.out.println(&quot;boardCommentDto = &quot; + pcno);</span>
+<span class="nc" id="L41">        List&lt;BoardCommentDto&gt; list=null;</span>
+
+        try {
+<span class="nc" id="L44">          list = boardCommentService.findBoardComment(pcno);</span>
+
+<span class="nc bnc" id="L46" title="All 2 branches missed.">           if(list.size()!=0)</span>
+<span class="nc" id="L47">           return new ResponseEntity&lt;&gt;(list,HttpStatus.OK);</span>
+           // list의 크기가 0이어도 빈배열을 반환한다.
+<span class="nc" id="L49">           return new ResponseEntity&lt;&gt;(list,HttpStatus.BAD_REQUEST);</span>
+<span class="nc" id="L50">        } catch (Exception e) {</span>
+<span class="nc" id="L51">            list.clear();</span>
+<span class="nc" id="L52">            e.printStackTrace();</span>
+            // 예외가 발생해도 빈배열을 반환한다.
+<span class="nc" id="L54">            return new ResponseEntity&lt;&gt;(list,HttpStatus.BAD_REQUEST);</span>
+        }
+
+
+    }
+
+        // @PathVariable이 아닌 바디에 다가 넣어서 정보를 보내야 겠다. 
+    @RequestMapping(value=&quot;/comment&quot;,method=RequestMethod.PUT)
+    public ResponseEntity&lt;HttpStatus&gt; modifyBoardComment(@RequestBody BoardCommentDto boardCommentDto)throws Exception{
+<span class="nc" id="L63">        System.out.println(&quot;boardCommentDto = &quot; + boardCommentDto);</span>
+        try{
+
+<span class="nc" id="L66">            boardCommentService.modifyBoardComment(boardCommentDto);</span>
+<span class="nc" id="L67">            return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
+
+<span class="nc" id="L69">        }catch(Exception e){</span>
+<span class="nc" id="L70">            e.printStackTrace();</span>
+<span class="nc" id="L71">            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</span>
+        }
+
+        
+    }
+
+    // @PathVariable이 아닌 바디에 다가 넣어서 정보를 보내야 겠다.
+    // delete 는 DB의 deleted_yn 칼럼의 정보를 'Y'로 변경한다.
+    @RequestMapping(value=&quot;/comment&quot;,method=RequestMethod.DELETE)
+    public ResponseEntity&lt;HttpStatus&gt; removeBoardComment(@RequestBody BoardCommentDto boardCommentDto)throws Exception{
+
+<span class="nc" id="L82">        System.out.println(&quot;boardCommentDto = &quot; + boardCommentDto);</span>
+        try{
+
+<span class="nc" id="L85">            boardCommentService.removeBoardComment(boardCommentDto.getCno());</span>
+<span class="nc" id="L86">            return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
+<span class="nc" id="L87">        }catch(Exception e){</span>
+
+<span class="nc" id="L89">            e.printStackTrace();</span>
+<span class="nc" id="L90">            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</span>
+
+        }
+
+
+    }
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PageHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ch8_4</a> &gt; <a href="index.source.html" class="el_package">com.seohan1010.ch8_4.to</a> &gt; <span class="el_source">PageHandler.java</span></div><h1>PageHandler.java</h1><pre class="source lang-java linenums">package com.seohan1010.ch8_4.to;
+
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.sql.DataSource;
+
+public class PageHandler {
+
+
+//private int page; // 현재 페이지
+//    private int pageSize; // 한 페이지의 크기
+//    private String option;
+//    private String keyword;
+
+
+    private SearchCondition sc;
+
+
+    private int totalCnt;  // 총 게시물 갯수
+<span class="nc" id="L20">    private int naviSize = 10; // 페이지 네비게이션의 크기</span>
+    private int totalPage; // 전체 페이지의 개수
+
+    private int beginPage; // 네비게이션의 첫번째 페이지
+    private int endPage; // 네비게이션의 마지막 페이지
+    private boolean showPrev; // 이전 페이지로 이동하는 링트를 보여줄 것인지의 여부
+    private boolean showNext; // 다음 페이지로 이동하는 링크를 보여줄 것인지의 여부
+
+
+<span class="nc" id="L29">    public PageHandler(int totalCnt, SearchCondition sc) {</span>
+<span class="nc" id="L30">        this.totalCnt = totalCnt;</span>
+<span class="nc" id="L31">        this.sc = sc;</span>
+
+
+<span class="nc" id="L34">        doPaging(totalCnt,sc);</span>
+<span class="nc" id="L35">    }</span>
+
+
+    // 페이지를 지정해 주면은 아래의 메서드를 호출한다.
+
+    public void doPaging(int totalCnt, SearchCondition sc) {
+
+<span class="nc" id="L42">        this.totalCnt = totalCnt;</span>
+
+<span class="nc" id="L44">        totalPage = (int) Math.ceil(totalCnt / (double) sc.getPageSize());</span>
+<span class="nc" id="L45">        beginPage = ((sc.getPage() - 1) / naviSize) * naviSize + 1;</span>
+        // 아래의 식에서 왼쪽의 값은 언제나 10의 배수가 나온다. 반면 totalPage는
+        // 왼쪽의 값보다 클수도 혹은 작을수도 있다.
+<span class="nc" id="L48">        endPage = Math.min(beginPage + naviSize - 1, totalPage);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        showPrev = beginPage != 1;</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        showNext = endPage != totalPage;</span>
+
+<span class="nc" id="L52">    }</span>
+
+
+    @Override
+    public String toString() {
+<span class="nc" id="L57">        return &quot;PageHandler{&quot; +</span>
+                &quot;sc=&quot; + sc +
+                &quot;, totalCnt=&quot; + totalCnt +
+                &quot;, naviSize=&quot; + naviSize +
+                &quot;, totalPage=&quot; + totalPage +
+                &quot;, beginPage=&quot; + beginPage +
+                &quot;, endPage=&quot; + endPage +
+                &quot;, showPrev=&quot; + showPrev +
+                &quot;, showNext=&quot; + showNext +
+                '}';
+    }
+
+    public int getTotalCnt() {
+<span class="nc" id="L70">        return totalCnt;</span>
+    }
+
+    public void setTotalCnt(int totalCnt) {
+<span class="nc" id="L74">        this.totalCnt = totalCnt;</span>
+<span class="nc" id="L75">    }</span>
+
+
+
+    public int getNaviSize() {
+<span class="nc" id="L80">        return naviSize;</span>
+    }
+
+    public void setNaviSize(int naviSize) {
+<span class="nc" id="L84">        this.naviSize = naviSize;</span>
+<span class="nc" id="L85">    }</span>
+
+    public int getTotalPage() {
+<span class="nc" id="L88">        return totalPage;</span>
+    }
+
+    public void setTotalPage(int totalPage) {
+<span class="nc" id="L92">        this.totalPage = totalPage;</span>
+<span class="nc" id="L93">    }</span>
+
+
+
+    public int getBeginPage() {
+<span class="nc" id="L98">        return beginPage;</span>
+    }
+
+    public void setBeginPage(int beginPage) {
+<span class="nc" id="L102">        this.beginPage = beginPage;</span>
+<span class="nc" id="L103">    }</span>
+
+    public int getEndPage() {
+<span class="nc" id="L106">        return endPage;</span>
+    }
+
+    public void setEndPage(int endPage) {
+<span class="nc" id="L110">        this.endPage = endPage;</span>
+<span class="nc" id="L111">    }</span>
+
+    public boolean isShowPrev() {
+<span class="nc" id="L114">        return showPrev;</span>
+    }
+
+    public void setShowPrev(boolean showPrev) {
+<span class="nc" id="L118">        this.showPrev = showPrev;</span>
+<span class="nc" id="L119">    }</span>
+
+    public boolean isShowNext() {
+<span class="nc" id="L122">        return showNext;</span>
+    }
+
+    public void setShowNext(boolean showNext) {
+<span class="nc" id="L126">        this.showNext = showNext;</span>
+<span class="nc" id="L127">    }</span>
+
+    void print() {
+
+<span class="nc" id="L131">        System.out.println(&quot;page = &quot; + sc.getPage());</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        System.out.println(showPrev ? &quot;[PREV]&quot; : &quot;&quot;);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        for (int i = beginPage; i &lt;= endPage; i++) {</span>
+
+<span class="nc" id="L135">            System.out.println(i + &quot; &quot;);</span>
+        }
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        System.out.println(showNext ? &quot;[NEXT]&quot; : &quot;&quot;);</span>
+
+<span class="nc" id="L139">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ch8_4</a> &gt; <a href="index.source.html" class="el_package">com.seohan1010.ch8_4.controller</a> &gt; <span class="el_source">BoardController.java</span></div><h1>BoardController.java</h1><pre class="source lang-java linenums">package com.seohan1010.ch8_4.controller;
+
+
+import com.seohan1010.ch8_4.mapper.BoardMapper;
+import com.seohan1010.ch8_4.service.BoardService;
+import com.seohan1010.ch8_4.to.BoardDto;
+import com.seohan1010.ch8_4.to.PageHandler;
+import com.seohan1010.ch8_4.to.SearchCondition;
+import org.apache.catalina.webresources.FileResource;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.util.*;
+
+@RestController
+@CrossOrigin(origins = &quot;http://localhost:3000&quot;,
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+             allowCredentials = &quot;false&quot; )
+@RequestMapping(&quot;/board&quot;)
+<span class="nc" id="L33">public class BoardController {</span>
+
+    @Autowired
+    BoardService boardService;
+
+    @Autowired
+    BoardMapper boardMapper;
+
+
+    @Value(&quot;${uploadPath}&quot;)
+    private String uploadPath;
+
+
+    @RequestMapping(value = &quot;/uploadFile&quot;, method = RequestMethod.POST)
+    public ResponseEntity&lt;HttpStatus&gt; uploadFile(MultipartHttpServletRequest request) {
+<span class="nc" id="L48">        System.out.println(&quot;request.getRequestHeaders() = &quot; + request.getRequestHeaders());</span>
+<span class="nc" id="L49">        System.out.println(&quot;request.getFileNames() = &quot; + request.getFileNames());</span>
+<span class="nc" id="L50">        System.out.println(&quot;request.getHttpServletMapping() = &quot; + request.getHttpServletMapping());</span>
+
+        try {
+
+
+//            System.out.println(&quot;files = &quot; + files);
+//
+//
+//            for (MultipartFile file : files) {
+//                System.out.println(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;);
+//                System.out.println(&quot;file.getOriginalFilename() = &quot; + file.getOriginalFilename());
+//                System.out.println(&quot;file.getSize() = &quot; + file.getSize());
+//                File upFile = new File(uploadPath, file.getOriginalFilename());
+//                file.transferTo(upFile);
+//            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.BAD_REQUEST);
+
+        }
+
+<span class="nc" id="L72">        return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.OK);</span>
+
+    }
+
+
+    @RequestMapping(value = &quot;/download&quot;, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity&lt;FileSystemResource&gt; downloadFile(String fileName) {
+<span class="nc" id="L79">        System.out.println(&quot;fileName = &quot; + fileName);</span>
+
+<span class="nc" id="L81">        FileSystemResource resource = new FileSystemResource(uploadPath + fileName);</span>
+
+<span class="nc" id="L83">        return null;</span>
+
+    }
+
+    public ResponseEntity&lt;String&gt; deleteFile(String fileName) {
+
+<span class="nc" id="L89">        System.out.println(&quot;fileName = &quot; + fileName);</span>
+<span class="nc" id="L90">        File file = new File(uploadPath + fileName);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (file.delete() == true) {</span>
+<span class="nc" id="L92">            return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
+        }
+<span class="nc" id="L94">        return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+
+
+    }
+
+    @RequestMapping(value = &quot;/board/all&quot;, method = RequestMethod.GET)
+    public List&lt;BoardDto&gt; selectAll() throws Exception {
+
+<span class="nc" id="L102">        List&lt;BoardDto&gt; b = boardMapper.selectAll();</span>
+<span class="nc" id="L103">        return b;</span>
+    }
+
+
+    // 프론트에서 유효하지 못한 값들이 넘어오면 에러 코드와 함께 빈배열을 반환한다.
+    // 페이지 핸들러로 검색된 게시판의 totalCnt값을 넘겨줘서 계산한 값들을 백단에서 같이 넘겨준다. 검색한 후에는 검색된 결과에 대한
+    // 페이징이 가능하게 하는 프론트 단의 로직이 필요하다.
+    // ---&gt; map 으로 넘겨주어야 할거 같다(검색된 게시판의 pageHandler 결과를 넘겨줘서 페이징을 하기 위해서 이다. ).
+    @RequestMapping(value = &quot;/search&quot;, method = RequestMethod.POST)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; searchBoardList(@RequestBody SearchCondition sc) throws Exception {
+<span class="nc" id="L113">        List&lt;BoardDto&gt; list = null;</span>
+<span class="nc" id="L114">        System.out.println(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; sc = &quot; + sc);</span>
+
+
+        // 검색된 게시글에 들어가는 offset과 limit은 검색된 게시글의 갯수를 세는 쿼리문의 offset , limit 과 같아야 한다.
+<span class="nc" id="L118">        Integer page = sc.getPage();</span>
+<span class="nc" id="L119">        Integer pageSize = sc.getPageSize();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (page == null) page = 1;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (pageSize == null) pageSize = 10;</span>
+
+
+<span class="nc" id="L124">        SearchCondition sc2 = new SearchCondition();</span>
+<span class="nc" id="L125">        sc2.setPage(page);</span>
+<span class="nc" id="L126">        sc2.setPageSize(pageSize);</span>
+<span class="nc" id="L127">        sc2.setOption(sc.getOption());</span>
+<span class="nc" id="L128">        sc2.setKeyword(sc.getKeyword());</span>
+<span class="nc" id="L129">        int totalCnt = boardService.searchBoardListCnt(sc);</span>
+<span class="nc" id="L130">        PageHandler ph = new PageHandler(totalCnt, sc);</span>
+
+<span class="nc" id="L132">        Map&lt;String, Object&gt; map = null;</span>
+        try {
+<span class="nc" id="L134">            list = boardService.searchBoardList(sc);</span>
+<span class="nc" id="L135">            map = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L136">            map.put(&quot;ph&quot;, ph);</span>
+<span class="nc" id="L137">            map.put(&quot;list&quot;, list);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            System.out.println(list == null ? &quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;no data found&quot; : list);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (list.size() == 0)</span>
+<span class="nc" id="L140">                return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.BAD_REQUEST); // 204번 에러 코드</span>
+<span class="nc" id="L141">            return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.OK); // 200번 코드</span>
+<span class="nc" id="L142">        } catch (Exception e) {</span>
+<span class="nc" id="L143">            e.printStackTrace();</span>
+<span class="nc" id="L144">            return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.BAD_REQUEST); // 400번 코드</span>
+        }
+
+    }
+
+    // 프론트에서 넘어온 값이 DB에 유효하지 않은 값이면 406번 코드를 반환
+
+    @RequestMapping(value = &quot;/board&quot;, method = RequestMethod.POST)
+    public ResponseEntity&lt;HttpStatus&gt; registerBoard(@RequestBody BoardDto boardDto) {
+<span class="nc" id="L153">        System.out.println(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; boardDto : &quot; + boardDto);</span>
+        try {
+<span class="nc" id="L155">            boardService.registerBoard(boardDto);</span>
+<span class="nc" id="L156">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.OK); // 200번 코드를 반환</span>
+<span class="nc" id="L157">        } catch (Exception e) {</span>
+<span class="nc" id="L158">            e.printStackTrace();</span>
+<span class="nc" id="L159">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.NOT_ACCEPTABLE); // 406번 코드를 반환</span>
+        }
+
+    }
+
+    //okay condition
+    @RequestMapping(value = &quot;/board&quot;, method = RequestMethod.GET)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; findBoardList(Integer page, Integer pageSize) throws Exception {
+<span class="nc" id="L167">        List&lt;BoardDto&gt; list = new ArrayList&lt;BoardDto&gt;();</span>
+
+<span class="nc" id="L169">        Map map = new HashMap();</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (page == null) page = 1;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (pageSize == null) pageSize = 10;</span>
+
+
+        try {
+            // 전체 게시물의 개수를 가지고 오고
+<span class="nc" id="L176">            int totalCnt = boardService.getCount();</span>
+            //
+<span class="nc" id="L178">            PageHandler pageHandler = new PageHandler(totalCnt, new SearchCondition(&quot;&quot;, &quot;&quot;, page, pageSize));</span>
+
+            // 해당 범위에 있는 게시물을 가져오기위함
+<span class="nc" id="L181">            map.put(&quot;offset&quot;, (page - 1) * pageSize);</span>
+<span class="nc" id="L182">            map.put(&quot;pageSize&quot;, pageSize);</span>
+<span class="nc" id="L183">            list = boardService.findBoardList(map);</span>
+
+            // map안에 있는 데이터를 정리
+<span class="nc" id="L186">            map.clear();</span>
+
+            // db에서 가져온 게시물 리스트와 네비게이션을 위한 데이터를 프론트로 보냄
+<span class="nc" id="L189">            map.put(&quot;list&quot;, list);</span>
+<span class="nc" id="L190">            map.put(&quot;ph&quot;, pageHandler);</span>
+
+<span class="nc" id="L192">            System.out.println(&quot; &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; map = &quot; + map);</span>
+            //list에 데이터가 없으면은 204번 코드를 반환                           // NO_CONTENT를 사용하면은 데이터가 아예 프론트로 안간다.
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (list.size() == 0)</span>
+<span class="nc" id="L195">                return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.BAD_REQUEST); // 400번 코드를 반환</span>
+<span class="nc" id="L196">            return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.OK); // 200번 코드를 반환</span>
+<span class="nc" id="L197">        } catch (Exception e) {</span>
+<span class="nc" id="L198">            e.printStackTrace();</span>
+<span class="nc" id="L199">            map.clear();</span>
+            // 에러가 발생했을때에도 값을 넣어주어야 프론트단에서 에러 핸들링이 쉬워진다.
+<span class="nc" id="L201">            map.put(&quot;list&quot;, list);</span>
+<span class="nc" id="L202">            return new ResponseEntity&lt;Map&lt;String, Object&gt;&gt;(map, HttpStatus.BAD_REQUEST); // 400번 코드를 반환</span>
+        }
+
+    }
+
+
+    // 아래의 url에서 {bno}에 값을 아예주지 않으면은 아래의 메서드를 찾지 못한다.
+    // 없는 게시물에 대한 요청을 보낼수 없으므로 아래의 메서드 또한 유효하다.
+    @RequestMapping(value = &quot;/detail/{bno}&quot;, method = RequestMethod.GET)
+    public ResponseEntity&lt;BoardDto&gt; findBoardDetail(@PathVariable(&quot;bno&quot;) Long bno) throws Exception {
+<span class="nc" id="L212">        System.out.println(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; bno : &quot; + bno);</span>
+<span class="nc" id="L213">        BoardDto boardDto = null;</span>
+        try {
+<span class="nc" id="L215">            boardDto = boardService.findBoardDetail((Long) bno);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">            if (boardDto == null) return new ResponseEntity&lt;BoardDto&gt;(boardDto, HttpStatus.NOT_FOUND); // 404번 코드를 반환</span>
+<span class="nc" id="L217">            System.out.println(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; boardDto : &quot; + boardDto);</span>
+<span class="nc" id="L218">            return new ResponseEntity&lt;BoardDto&gt;(boardDto, HttpStatus.OK); // 200번 코드를 반환</span>
+
+<span class="nc" id="L220">        } catch (Exception e) {</span>
+<span class="nc" id="L221">            e.printStackTrace();</span>
+<span class="nc" id="L222">            return new ResponseEntity&lt;BoardDto&gt;(boardDto, HttpStatus.BAD_REQUEST); // 204번 코드를 반환</span>
+        }
+
+    }
+
+
+    //아래의 메서드는 null이 넘어 오더라도 sql exception이 발생하지 않아서 프론트에 200번 코드를 보낸다.
+    // ---&gt; 없는 게시물에서 modify를 할수는 없으므로 아래의 메서드는 유효한거 같다.
+    @RequestMapping(value = &quot;/board&quot;, method = RequestMethod.PUT)
+    public ResponseEntity&lt;HttpStatus&gt; modifyBoard(@RequestBody BoardDto boardDto) {
+
+        try {
+<span class="nc" id="L234">            boardService.modifyBoard(boardDto);</span>
+<span class="nc" id="L235">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.OK); // 200번 코드를 반환</span>
+<span class="nc" id="L236">        } catch (Exception e) {</span>
+<span class="nc" id="L237">            e.printStackTrace();</span>
+<span class="nc" id="L238">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.NOT_MODIFIED); // 304번 코드를 반환</span>
+        }
+
+    }
+
+
+    // delete는 잘 사용하지 않는다고 한다. 다음 프로젝트 에서는 delete를 다른 메서드로
+    // 구현 해보자
+    // delete는 업데이트로 구현했다. ---&gt; delete를 하는 것이 아닌 DB의 테이블의 특정 칼럼 정보를
+    // 수정한다.
+    @RequestMapping(value = &quot;/board/{bno}&quot;, method = RequestMethod.DELETE)
+    public ResponseEntity&lt;HttpStatus&gt; removeBoard(@PathVariable(&quot;bno&quot;) Long bno) {
+
+        try {
+<span class="nc" id="L252">            boardService.removeBoardDetail(bno);</span>
+<span class="nc" id="L253">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.OK); // 200번 코드를 반환</span>
+<span class="nc" id="L254">        } catch (Exception e) {</span>
+<span class="nc" id="L255">            e.printStackTrace();</span>
+<span class="nc" id="L256">            return new ResponseEntity&lt;HttpStatus&gt;(HttpStatus.NOT_ACCEPTABLE);  // 406번 코드를 반환</span>
+        }
+
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,105 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.15'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'checkstyle' 
+    id 'jacoco'
+}
+
+group = 'com.seohan1010'
+version = '0.0.1-SNAPSHOT'
+
+java {
+
+//	sourceCompatibility = '11'
+
+    toolchain {
+
+                languageVersion = JavaLanguageVersion.of(11)
+
+             }
+
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+
+
+dependencies {
+    // 기본설정 관련
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    testImplementation 'junit:junit:4.13.1'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
+    // validation을 사용하기 위해 필요
+    // https://mvnrepository.com/artifact/javax.validation/validation-api
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+
+    // json으로 데이터를 받아오기 위해 필요
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+    // aop를 사용하기 위함
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // 이거는 spring강의에서 사용하는 건데 library 는 추가가 되지만 클래스에서 임포트가 되지 않는다.
+   // https://mvnrepository.com/artifact/org.aspectj/aspectjrt
+    implementation 'org.aspectj:aspectjweaver:1.9.24' // 필요 시
+   // https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
+    implementation 'org.aspectj:aspectjweaver:1.9.24' // 필요 시
+
+
+
+    // 아래의 의존성을 사용하면은 에러가 발생한다. 이전에는 위의 의존성을 사용할때 에러가 발생했는데 이거는
+    // 조금더 알아 보아야 겠다.
+//    implementation group: 'org.springframework', name: 'spring-aop', version: '5.0.7.RELEASE'
+
+
+    // DB관련
+    implementation 'com.mysql:mysql-connector-j:8.1.0'
+
+    //sql 쿼리 로그 나오게 하는 의존성
+//    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2:1.16'
+    // 위의 의존성을 사용하면은 properties 파일에서 driver class의 이름에서 에러가 난다.
+    // https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+
+// jpa 관련
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // mybatis 관련 설정
+    implementation 'org.mybatis:mybatis:3.5.13'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.0'
+
+
+}
+
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.seohan1010.ch8_4.Ch84Application'
+        )
+    }
+}
+
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+
+tasks.named('test') {
+   useJUnitPlatform()
+}
